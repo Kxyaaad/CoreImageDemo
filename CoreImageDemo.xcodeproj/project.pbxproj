@@ -13,6 +13,8 @@
 		04419F7A258C586F00A1652B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 04419F78258C586F00A1652B /* Main.storyboard */; };
 		04419F7C258C587000A1652B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 04419F7B258C587000A1652B /* Assets.xcassets */; };
 		04419F7F258C587000A1652B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 04419F7D258C587000A1652B /* LaunchScreen.storyboard */; };
+		04419F89258C875A00A1652B /* 2.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 04419F88258C875A00A1652B /* 2.jpg */; };
+		04419F8C258C875E00A1652B /* 1.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 04419F8B258C875E00A1652B /* 1.jpg */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +26,8 @@
 		04419F7B258C587000A1652B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		04419F7E258C587000A1652B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		04419F80258C587000A1652B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		04419F88258C875A00A1652B /* 2.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = 2.jpg; path = "../../../../../Library/Containers/com.tencent.xinWeChat/Data/Library/Application Support/com.tencent.xinWeChat/2.0b4.0.9/e499ca99d7ff1dd883b508828b9baabe/Message/MessageTemp/9e20f478899dc29eb19741386f9343c8/Image/2.jpg"; sourceTree = "<group>"; };
+		04419F8B258C875E00A1652B /* 1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = 1.jpg; path = "../../../../../Library/Containers/com.tencent.xinWeChat/Data/Library/Application Support/com.tencent.xinWeChat/2.0b4.0.9/e499ca99d7ff1dd883b508828b9baabe/Message/MessageTemp/9e20f478899dc29eb19741386f9343c8/Image/1.jpg"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,6 +60,7 @@
 		04419F71258C586F00A1652B /* CoreImageDemo */ = {
 			isa = PBXGroup;
 			children = (
+				04419F87258C874300A1652B /* Images */,
 				04419F72258C586F00A1652B /* AppDelegate.swift */,
 				04419F74258C586F00A1652B /* SceneDelegate.swift */,
 				04419F76258C586F00A1652B /* ViewController.swift */,
@@ -65,6 +70,15 @@
 				04419F80258C587000A1652B /* Info.plist */,
 			);
 			path = CoreImageDemo;
+			sourceTree = "<group>";
+		};
+		04419F87258C874300A1652B /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				04419F8B258C875E00A1652B /* 1.jpg */,
+				04419F88258C875A00A1652B /* 2.jpg */,
+			);
+			path = Images;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -124,6 +138,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				04419F8C258C875E00A1652B /* 1.jpg in Resources */,
+				04419F89258C875A00A1652B /* 2.jpg in Resources */,
 				04419F7F258C587000A1652B /* LaunchScreen.storyboard in Resources */,
 				04419F7C258C587000A1652B /* Assets.xcassets in Resources */,
 				04419F7A258C586F00A1652B /* Main.storyboard in Resources */,
