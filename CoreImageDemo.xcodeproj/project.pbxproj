@@ -15,6 +15,7 @@
 		04419F7F258C587000A1652B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 04419F7D258C587000A1652B /* LaunchScreen.storyboard */; };
 		04419F89258C875A00A1652B /* 2.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 04419F88258C875A00A1652B /* 2.jpg */; };
 		04419F8C258C875E00A1652B /* 1.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 04419F8B258C875E00A1652B /* 1.jpg */; };
+		04419F91258CB13200A1652B /* ThumbnilCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04419F90258CB13200A1652B /* ThumbnilCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 		04419F80258C587000A1652B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		04419F88258C875A00A1652B /* 2.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = 2.jpg; path = "../../../../../Library/Containers/com.tencent.xinWeChat/Data/Library/Application Support/com.tencent.xinWeChat/2.0b4.0.9/e499ca99d7ff1dd883b508828b9baabe/Message/MessageTemp/9e20f478899dc29eb19741386f9343c8/Image/2.jpg"; sourceTree = "<group>"; };
 		04419F8B258C875E00A1652B /* 1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = 1.jpg; path = "../../../../../Library/Containers/com.tencent.xinWeChat/Data/Library/Application Support/com.tencent.xinWeChat/2.0b4.0.9/e499ca99d7ff1dd883b508828b9baabe/Message/MessageTemp/9e20f478899dc29eb19741386f9343c8/Image/1.jpg"; sourceTree = "<group>"; };
+		04419F90258CB13200A1652B /* ThumbnilCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnilCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,6 +62,7 @@
 		04419F71258C586F00A1652B /* CoreImageDemo */ = {
 			isa = PBXGroup;
 			children = (
+				04419F8F258CB11200A1652B /* Views */,
 				04419F87258C874300A1652B /* Images */,
 				04419F72258C586F00A1652B /* AppDelegate.swift */,
 				04419F74258C586F00A1652B /* SceneDelegate.swift */,
@@ -79,6 +82,14 @@
 				04419F88258C875A00A1652B /* 2.jpg */,
 			);
 			path = Images;
+			sourceTree = "<group>";
+		};
+		04419F8F258CB11200A1652B /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				04419F90258CB13200A1652B /* ThumbnilCell.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -155,6 +166,7 @@
 			files = (
 				04419F77258C586F00A1652B /* ViewController.swift in Sources */,
 				04419F73258C586F00A1652B /* AppDelegate.swift in Sources */,
+				04419F91258CB13200A1652B /* ThumbnilCell.swift in Sources */,
 				04419F75258C586F00A1652B /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

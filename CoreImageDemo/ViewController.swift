@@ -11,7 +11,22 @@ class ViewController: UIViewController {
     
     var ImageView : UIImageView!
     var ThumbnilTable: UITableView!
-
+    let FilterKeys = [
+        "CIColorClamp",
+        "CIColorControls",
+        "CIColorMatrix",
+        "CIColorPolynomial",
+        "CIExposureAdjust",
+        "CIGammaAdjust",
+        "CIHueAdjust",
+        "CILinearToSRGBToneCurve",
+        "CISRGBToneCurveToLinear",
+        "CITemperatureAndTint",
+        "CIToneCurve",
+        "CIVibrance",
+        "CIWhitePointAdjust"
+    ]
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
@@ -25,11 +40,21 @@ class ViewController: UIViewController {
     }
     
     func addThumbnail() {
-        self.ThumbnilTable = UITableView(frame: CGRect(x: 30, y: self.ImageView.frame.maxY + 30, width: self.view.frame.width - 60 , height: 100))
-        self.ThumbnilTable.backgroundColor = .red
+        self.ThumbnilTable = UITableView()
+        
+        self.ThumbnilTable = UITableView(frame: CGRect(x: 0, y: 0, width: 100 , height: self.view.frame.width - 60))
+        self.ThumbnilTable.center = CGPoint(x: self.view.center.x, y: self.ImageView.frame.maxY + 80)
+        //为了实现横向滚动效果，旋转90度
+        self.ThumbnilTable.transform = CGAffineTransform.init(rotationAngle: -CGFloat(Double.pi/2))
+        self.ThumbnilTable.backgroundColor = .gray
+        self.ThumbnilTable.showsVerticalScrollIndicator = false
+        self.ThumbnilTable.delegate = self
+        self.ThumbnilTable.dataSource = self
+        self.ThumbnilTable.register(ThumbnilCell.self, forCellReuseIdentifier: "THUMBILCELL")
+        
         self.view.addSubview(self.ThumbnilTable)
     }
-
+    
     func addFilter(imageName: String) -> UIImage {
         
         guard let fileURL = Bundle.main.url(forResource: "1", withExtension: "jpg") else {return UIImage()}
@@ -49,17 +74,22 @@ class ViewController: UIViewController {
         return UIImage(cgImage: cgImg!)
         
     }
-
+    
 }
 
 extension ViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 0
+        return self.FilterKeys.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        return UITableViewCell()
+        let cell = tableView.dequeueReusableCell(withIdentifier: "THUMBILCELL", for: indexPath) as! ThumbnilCell
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 100
     }
     
     
