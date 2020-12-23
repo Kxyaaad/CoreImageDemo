@@ -11,12 +11,12 @@ class ViewController: UIViewController {
     
     var ImageView : UIImageView!
     var ThumbnilTable: UITableView!
+    var selectedFilter : String?
     let FilterKeys = [
         "CIColorCrossPolynomial",
         "CIColorCube",
         "CIColorCubeWithColorSpace",
         "CIColorInvert",
-        "CIColorMap",
         "CIColorMonochrome",
         "CIColorPosterize",
         "CIFalseColor",
@@ -58,7 +58,10 @@ class ViewController: UIViewController {
         self.ThumbnilTable.showsVerticalScrollIndicator = false
         self.ThumbnilTable.delegate = self
         self.ThumbnilTable.dataSource = self
-        self.ThumbnilTable.register(ThumbnilCell.self, forCellReuseIdentifier: "THUMBILCELL")
+        for id in self.FilterKeys {
+            self.ThumbnilTable.register(ThumbnilCell.self, forCellReuseIdentifier: id)
+        }
+        
         self.ThumbnilTable.separatorStyle = .none
         self.view.addSubview(self.ThumbnilTable)
     }
@@ -69,7 +72,7 @@ class ViewController: UIViewController {
         
         let originalImage = CIImage(contentsOf: fileURL)
         
-        let filter = CIFilter(name: "CISepiaTone")!
+        let filter = CIFilter(name: "CIColorCrossPolynomial")!
         filter.setValue(originalImage, forKey: kCIInputImageKey)
         
         //判断是否具有某些可调整的参数
@@ -92,7 +95,7 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "THUMBILCELL", for: indexPath) as! ThumbnilCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: self.FilterKeys[indexPath.row], for: indexPath) as! ThumbnilCell
         cell.imageName = "1"
         cell.fileExtension = "jpg"
         cell.filterKeyString = self.FilterKeys[indexPath.row]
@@ -103,6 +106,9 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
         return 100
     }
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        self.selectedFilter = self.FilterKeys[indexPath.row]
+    }
     
 }
 

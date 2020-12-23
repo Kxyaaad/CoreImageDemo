@@ -13,8 +13,8 @@ class ThumbnilCell: UITableViewCell {
     
     var filterKeyString : String? {
         didSet {
-            if self.load == false && oldValue != nil {
-//                self.addFilter()
+            if self.load == false {
+                self.addFilter()
                 self.load = true
             }
         }
@@ -38,7 +38,7 @@ class ThumbnilCell: UITableViewCell {
     
     func CreateUI() {
         self.ImageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 80, height: 80))
-        self.ImageView.transform = CGAffineTransform.init(rotationAngle: CGFloat(Double.pi / 2))
+        
         //        self.addFilter()
         self.imageView?.image = nil
         self.ImageView.center = self.center
@@ -46,6 +46,7 @@ class ThumbnilCell: UITableViewCell {
         self.ImageView.backgroundColor = .systemGray
         self.ImageView.layer.cornerRadius = 8
         self.ImageView.layer.masksToBounds = true
+        
         self.contentView.addSubview(self.ImageView) //对于可编辑的CEll，必须添加到contentView
         
     }
@@ -56,16 +57,14 @@ class ThumbnilCell: UITableViewCell {
         
     }
     
-    override func prepareForReuse() {
-        self.imageView?.image = nil
-        self.addFilter()
-    }
     
     func addFilter() {
+        print("执行")
         let queue = DispatchQueue(label: self.filterKeyString ?? "test")
+        guard let fileURL = Bundle.main.url(forResource: self.imageName, withExtension: self.fileExtension) else {print("未能查到文件路径", self.imageName); return }
+        print("文件路径", fileURL)
         queue.async {
-            guard let fileURL = Bundle.main.url(forResource: self.imageName, withExtension: self.fileExtension) else {print("未能查到文件路径", self.imageName); return }
-            print("文件路径", fileURL)
+           
             let originalImage = CIImage(contentsOf: fileURL)
             guard let filter = CIFilter(name: self.filterKeyString ?? "" ) else {
                 print("添加滤镜出错", self.filterKeyString)
@@ -83,8 +82,11 @@ class ThumbnilCell: UITableViewCell {
             guard let cgImg : CGImage = context.createCGImage(filter.outputImage ?? CIImage(), from: (filter.outputImage ?? CIImage()).extent) else { return }
             
             DispatchQueue.main.async {
-                self.imageView?.image = UIImage(cgImage: cgImg)
+                self.ImageView.image = UIImage(cgImage: cgImg)
+                self.ImageView.transform = CGAffineTransform.init(rotationAngle: CGFloat(Double.pi/2))
+        
             }
+            
         }
         
         
