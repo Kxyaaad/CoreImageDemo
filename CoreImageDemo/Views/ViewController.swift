@@ -12,6 +12,7 @@ class ViewController: UIViewController {
     var ImageView : UIImageView!
     var ThumbnilTable: UITableView!
     var selectedFilter : String?
+    
     let FilterKeys = [
         "CIColorCrossPolynomial",
         "CIColorCube",
@@ -20,7 +21,6 @@ class ViewController: UIViewController {
         "CIColorMonochrome",
         "CIColorPosterize",
         "CIFalseColor",
-        "CIMaskToAlpha",
         "CIMaximumComponent",
         "CIMinimumComponent",
         "CIPhotoEffectChrome",
@@ -42,7 +42,7 @@ class ViewController: UIViewController {
         let img = self.addFilter(imageName: "2")
         self.ImageView = UIImageView(frame: CGRect(x: 50, y: (UIApplication.shared.windows.first?.windowScene?.statusBarManager?.statusBarFrame.height)!, width: self.view.frame.width - 100, height: (self.view.frame.width - 100) / 3 * 4 ))
         ImageView.image = img
-        ImageView.contentMode = .scaleAspectFit
+//        ImageView.contentMode = .scaleAspectFit
         view.addSubview(ImageView)
         self.addThumbnail()
         
@@ -50,7 +50,6 @@ class ViewController: UIViewController {
     
     func addThumbnail() {
         self.ThumbnilTable = UITableView()
-        
         self.ThumbnilTable = UITableView(frame: CGRect(x: 0, y: 0, width: 100 , height: self.view.frame.width - 60))
         self.ThumbnilTable.center = CGPoint(x: self.view.center.x, y: self.ImageView.frame.maxY + 80)
         //为了实现横向滚动效果，旋转90度
@@ -61,7 +60,6 @@ class ViewController: UIViewController {
         for id in self.FilterKeys {
             self.ThumbnilTable.register(ThumbnilCell.self, forCellReuseIdentifier: id)
         }
-        
         self.ThumbnilTable.separatorStyle = .none
         self.view.addSubview(self.ThumbnilTable)
     }
@@ -70,9 +68,17 @@ class ViewController: UIViewController {
         
         guard let fileURL = Bundle.main.url(forResource: "1", withExtension: "jpg") else {return UIImage()}
         
+        guard self.selectedFilter != nil else {
+            do {
+                return try UIImage(data: Data(contentsOf: fileURL))!
+            } catch {
+                return UIImage()
+            }
+        }
+        
         let originalImage = CIImage(contentsOf: fileURL)
         
-        let filter = CIFilter(name: "CIColorCrossPolynomial")!
+        let filter = CIFilter(name: self.selectedFilter!)!
         filter.setValue(originalImage, forKey: kCIInputImageKey)
         
         //判断是否具有某些可调整的参数
@@ -108,6 +114,10 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         self.selectedFilter = self.FilterKeys[indexPath.row]
+        print("当前滤镜", self.selectedFilter)
+        DispatchQueue.main.async {
+            self.ImageView.image = self.addFilter(imageName: "2")
+        }
     }
     
 }

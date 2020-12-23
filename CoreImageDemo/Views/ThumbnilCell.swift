@@ -59,18 +59,12 @@ class ThumbnilCell: UITableViewCell {
     
     
     func addFilter() {
-        print("执行")
         let queue = DispatchQueue(label: self.filterKeyString ?? "test")
         guard let fileURL = Bundle.main.url(forResource: self.imageName, withExtension: self.fileExtension) else {print("未能查到文件路径", self.imageName); return }
-        print("文件路径", fileURL)
         queue.async {
-           
+            
             let originalImage = CIImage(contentsOf: fileURL)
-            guard let filter = CIFilter(name: self.filterKeyString ?? "" ) else {
-                print("添加滤镜出错", self.filterKeyString)
-                return
-            }
-            print("滤镜", self.filterKeyString)
+            guard let filter = CIFilter(name: self.filterKeyString ?? "" ) else {return }
             filter.setValue(originalImage, forKey: kCIInputImageKey)
             
             //判断是否具有某些可调整的参数
@@ -84,7 +78,7 @@ class ThumbnilCell: UITableViewCell {
             DispatchQueue.main.async {
                 self.ImageView.image = UIImage(cgImage: cgImg)
                 self.ImageView.transform = CGAffineTransform.init(rotationAngle: CGFloat(Double.pi/2))
-        
+                
             }
             
         }
