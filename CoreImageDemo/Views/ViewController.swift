@@ -12,19 +12,28 @@ class ViewController: UIViewController {
     var ImageView : UIImageView!
     var ThumbnilTable: UITableView!
     let FilterKeys = [
-        "CIColorClamp",
-        "CIColorControls",
-        "CIColorMatrix",
-        "CIColorPolynomial",
-        "CIExposureAdjust",
-        "CIGammaAdjust",
-        "CIHueAdjust",
-        "CILinearToSRGBToneCurve",
-        "CISRGBToneCurveToLinear",
-        "CITemperatureAndTint",
-        "CIToneCurve",
-        "CIVibrance",
-        "CIWhitePointAdjust"
+        "CIColorCrossPolynomial",
+        "CIColorCube",
+        "CIColorCubeWithColorSpace",
+        "CIColorInvert",
+        "CIColorMap",
+        "CIColorMonochrome",
+        "CIColorPosterize",
+        "CIFalseColor",
+        "CIMaskToAlpha",
+        "CIMaximumComponent",
+        "CIMinimumComponent",
+        "CIPhotoEffectChrome",
+        "CIPhotoEffectFade",
+        "CIPhotoEffectInstant",
+        "CIPhotoEffectMono",
+        "CIPhotoEffectNoir",
+        "CIPhotoEffectProcess",
+        "CIPhotoEffectTonal",
+        "CIPhotoEffectTransfer",
+        "CISepiaTone",
+        "CIVignette",
+        "CIVignetteEffect"
     ]
     
     override func viewDidLoad() {
@@ -46,12 +55,11 @@ class ViewController: UIViewController {
         self.ThumbnilTable.center = CGPoint(x: self.view.center.x, y: self.ImageView.frame.maxY + 80)
         //为了实现横向滚动效果，旋转90度
         self.ThumbnilTable.transform = CGAffineTransform.init(rotationAngle: -CGFloat(Double.pi/2))
-        self.ThumbnilTable.backgroundColor = .gray
         self.ThumbnilTable.showsVerticalScrollIndicator = false
         self.ThumbnilTable.delegate = self
         self.ThumbnilTable.dataSource = self
         self.ThumbnilTable.register(ThumbnilCell.self, forCellReuseIdentifier: "THUMBILCELL")
-        
+        self.ThumbnilTable.separatorStyle = .none
         self.view.addSubview(self.ThumbnilTable)
     }
     
@@ -61,7 +69,7 @@ class ViewController: UIViewController {
         
         let originalImage = CIImage(contentsOf: fileURL)
         
-        let filter = CIFilter(name: "CIDiscBlur")!
+        let filter = CIFilter(name: "CISepiaTone")!
         filter.setValue(originalImage, forKey: kCIInputImageKey)
         
         //判断是否具有某些可调整的参数
@@ -85,6 +93,9 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "THUMBILCELL", for: indexPath) as! ThumbnilCell
+        cell.imageName = "1"
+        cell.fileExtension = "jpg"
+        cell.filterKeyString = self.FilterKeys[indexPath.row]
         return cell
     }
     
