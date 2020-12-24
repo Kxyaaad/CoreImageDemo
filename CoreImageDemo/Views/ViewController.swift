@@ -39,10 +39,10 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        let img = self.addFilter(imageName: "2")
+        let img = self.addFilter(imageName: "1")
         self.ImageView = UIImageView(frame: CGRect(x: 50, y: (UIApplication.shared.windows.first?.windowScene?.statusBarManager?.statusBarFrame.height)!, width: self.view.frame.width - 100, height: (self.view.frame.width - 100) / 3 * 4 ))
         ImageView.image = img
-//        ImageView.contentMode = .scaleAspectFit
+        ImageView.contentMode = .scaleAspectFit
         view.addSubview(ImageView)
         self.addThumbnail()
         
@@ -114,9 +114,8 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         self.selectedFilter = self.FilterKeys[indexPath.row]
-        print("当前滤镜", self.selectedFilter)
         DispatchQueue.main.async {
-            self.ImageView.image = self.addFilter(imageName: "2")
+            self.ImageView.image = self.addFilter(imageName: "1")
         }
     }
     
