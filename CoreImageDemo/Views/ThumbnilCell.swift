@@ -11,15 +11,24 @@ class ThumbnilCell: UITableViewCell {
     
     var load = false
     
-    var filterKeyString : String? {
+    var filterKeyString : String?
+    var thumbImage : UIImage? {
         didSet {
             if self.load == false {
-                self.addFilter()
+                let que = DispatchQueue(label: "re")
+                que.async {
+                    self.addFilter()
+                }
+                
                 self.load = true
             }
         }
+        willSet{
+            if newValue != self.thumbImage {
+                self.load = false
+            }
+        }
     }
-    var imageName = "1"
     var fileExtension = ""
     var ImageView = UIImageView()
     
@@ -39,35 +48,30 @@ class ThumbnilCell: UITableViewCell {
     func CreateUI() {
         self.ImageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 80, height: 80))
         
-        //        self.addFilter()
         self.ImageView.center = self.center
         self.ImageView.contentMode = .scaleAspectFill
         self.ImageView.backgroundColor = .black
         self.ImageView.layer.cornerRadius = 8
+        self.ImageView.backgroundColor = .systemGroupedBackground
         self.ImageView.layer.masksToBounds = true
         
         self.contentView.addSubview(self.ImageView) //对于可编辑的CEll，必须添加到contentView
         
     }
     
-    func compressIMG(imageURL : URL) -> UIImage{
-        var originIMG: UIImage?
-        do {
-            originIMG = UIImage(data: try Data(contentsOf: imageURL))
-        } catch {
-            print("未能找到图片", error)
-            return UIImage()
-        }
-        let scale = (originIMG?.size.width ?? 0) / 200
-        let size = CGSize(width: originIMG!.size.width / scale, height: originIMG!.size.height / scale)
-        return originIMG!.reSizeImage(reSize: size, scale: 0)
+    func compressIMG(image : UIImage) -> UIImage{
+        let scale = image.size.width / 200
+        let size = CGSize(width: image.size.width / scale, height: image.size.height / scale)
+        return image.reSizeImage(reSize: size, scale: 0)
     }
     
     
     func addFilter() {
-        let queue = DispatchQueue(label: self.filterKeyString ?? "test")
-        guard let fileURL = Bundle.main.url(forResource: self.imageName, withExtension: self.fileExtension) else {print("未能查到文件路径", self.imageName); return }
-        let originalImage = self.compressIMG(imageURL: fileURL)
+        print("测试")
+        let queue = DispatchQueue(label: "test")
+        guard self.thumbImage != nil else { return }
+        print("测试2", self.thumbImage?.pngData())
+        let originalImage = self.compressIMG(image: self.thumbImage!)
         let originalCIImage = CIImage(image: originalImage)
         queue.sync {
             guard let filter = CIFilter(name: self.filterKeyString ?? "" ) else {return }
