@@ -13,19 +13,12 @@ class ThumbnilCell: UITableViewCell {
     
     var filterKeyString : String?
     var thumbImage : UIImage? {
-        didSet {
-            if self.load == false {
-                let que = DispatchQueue(label: "re")
+        willSet{
+            if newValue != self.thumbImage {
+                let que = DispatchQueue(label: "deal_filter")
                 que.async {
                     self.addFilter()
                 }
-                
-                self.load = true
-            }
-        }
-        willSet{
-            if newValue != self.thumbImage {
-                self.load = false
             }
         }
     }
@@ -67,10 +60,8 @@ class ThumbnilCell: UITableViewCell {
     
     
     func addFilter() {
-        print("测试")
         let queue = DispatchQueue(label: "test")
         guard self.thumbImage != nil else { return }
-        print("测试2", self.thumbImage?.pngData())
         let originalImage = self.compressIMG(image: self.thumbImage!)
         let originalCIImage = CIImage(image: originalImage)
         queue.sync {
