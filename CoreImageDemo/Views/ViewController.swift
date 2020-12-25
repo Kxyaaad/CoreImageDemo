@@ -21,6 +21,8 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
         }
     }
     
+    var imageWithFilter: UIImage?
+    
     let FilterKeys = [
         "CIColorCrossPolynomial",
         "CIColorCube",
@@ -59,6 +61,7 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
         
         self.shareBtn = UIButton(frame: CGRect(x: self.view.frame.width - 70, y: 4, width: 40, height: 40))
         self.shareBtn.setBackgroundImage(UIImage.init(systemName: "square.and.arrow.up", withConfiguration: UIImage.SymbolConfiguration(pointSize: 35))?.withTintColor(.systemBlue,renderingMode: .alwaysOriginal), for: [.normal])
+        self.shareBtn.addTarget(self, action: #selector(self.saveToAlbum), for: .touchUpInside)
         self.scrollView.addSubview(self.shareBtn)
         
         self.toakePhoto = UIButton(frame: CGRect(x: 30, y: 0, width: 50, height: 50))
@@ -111,7 +114,7 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
             let img = UIImage(cgImage: cgImg!)
             DispatchQueue.main.async {
                 self.ImageView.image = img
-                
+                self.imageWithFilter = img
             }
         } else {
             self.ImageView.image = self.image
@@ -173,6 +176,54 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
         self.present(imagePicker, animated: true, completion: nil)
     }
     
+    @objc func saveToAlbum() {
+        if  self.imageWithFilter != nil {
+            UIImageWriteToSavedPhotosAlbum(self.imageWithFilter!, self, #selector(self.imageSave(image:didFinishSavingWithError:contextInfo:)), nil)
+        }else {
+            let alterController = UIAlertController(title: nil, message: "选择图片为空", preferredStyle: .alert)
+          
+            let cancel = UIAlertAction(title: "确定", style: .cancel) { (_) in
+                alterController.dismiss(animated: true) {
+                    
+                }
+            }
+            alterController.addAction(cancel)
+            self.present(alterController, animated: true) {
+                
+            }
+        }
+        
+    }
+    
+    
+    @objc func imageSave(image:UIImage, didFinishSavingWithError error:NSError?, contextInfo:UnsafeRawPointer) {
+        if error == nil {
+            let alterController = UIAlertController(title: "保存成功", message: "请到相册中查看", preferredStyle: .alert)
+          
+            let cancel = UIAlertAction(title: "确定", style: .cancel) { (_) in
+                alterController.dismiss(animated: true) {
+                    
+                }
+            }
+            alterController.addAction(cancel)
+            self.present(alterController, animated: true) {
+                
+            }
+        }else{
+            let alterController = UIAlertController(title: "保存错误", message: error!.description, preferredStyle: .alert)
+          
+            let cancel = UIAlertAction(title: "确定", style: .cancel) { (_) in
+                alterController.dismiss(animated: true) {
+                    
+                }
+            }
+            alterController.addAction(cancel)
+            self.present(alterController, animated: true) {
+                
+            }
+        }
+    }
+    
 }
 
 extension ViewController: UITableViewDelegate, UITableViewDataSource {
@@ -210,7 +261,6 @@ extension ViewController:UIImagePickerControllerDelegate {
                 print("未能获取")
             }
         }
-        
     }
     
 }
