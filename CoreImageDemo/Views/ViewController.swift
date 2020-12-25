@@ -157,9 +157,10 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
             print("当前设备不支持相机拍摄")
             return
         }
+        
         self.present(imagePicker, animated: true) {
-            print("相机弹出")
         }
+        
         
     }
     
