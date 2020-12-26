@@ -35,6 +35,14 @@ class ThumbnilCell: UITableViewCell {
         self.frame = CGRect(x: 0, y: 0, width: 100, height: 100)
 //        self.layer.shouldRasterize = true // 图片栅格化, 究极影响画质，如果不是点对点的话，就会直接马赛克
         self.layer.drawsAsynchronously = true //异步绘制
+        self.backgroundColor = .black
+        
+        self.contentView.backgroundColor = .clear
+        let selectedBacView = UIView()
+        selectedBacView.backgroundColor = .systemBackground
+        selectedBacView.layer.cornerRadius = 10
+        self.selectedBackgroundView = selectedBacView
+        
         CreateUI()
     }
     
@@ -43,9 +51,8 @@ class ThumbnilCell: UITableViewCell {
         
         self.ImageView.center = self.center
         self.ImageView.contentMode = .scaleAspectFill
-        self.ImageView.backgroundColor = .black
         self.ImageView.layer.cornerRadius = 8
-        self.ImageView.backgroundColor = .systemGroupedBackground
+        self.ImageView.backgroundColor = .init(white: 0.2, alpha: 1)
         self.ImageView.layer.masksToBounds = true
         
         self.contentView.addSubview(self.ImageView) //对于可编辑的CEll，必须添加到contentView
@@ -84,18 +91,14 @@ class ThumbnilCell: UITableViewCell {
             }
             
         }
-        
     }
     
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-        
-        
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
     
 }

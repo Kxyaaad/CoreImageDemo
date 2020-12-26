@@ -17,7 +17,7 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
     var image : UIImage? {
         didSet {
             self.addFilter()
-            self.ThumbnilTable.reloadData()
+//            self.ThumbnilTable.reloadData()
         }
     }
     
@@ -54,18 +54,19 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
     }
     
     func creatUI() {
+        self.view.backgroundColor = .black
         self.scrollView = UIScrollView(frame: CGRect(x: 0, y: (UIApplication.shared.windows.first?.windowScene?.statusBarManager?.statusBarFrame.height)!, width: self.view.frame.width, height: self.view.frame.height - (UIApplication.shared.windows.first?.windowScene?.statusBarManager?.statusBarFrame.height)!))
         self.scrollView.contentSize = CGSize(width: self.view.frame.width, height: self.view.frame.height)
         self.scrollView.showsVerticalScrollIndicator = false
         self.view.addSubview(self.scrollView)
         
-        self.shareBtn = UIButton(frame: CGRect(x: self.view.frame.width - 70, y: 4, width: 40, height: 40))
-        self.shareBtn.setBackgroundImage(UIImage.init(systemName: "square.and.arrow.up", withConfiguration: UIImage.SymbolConfiguration(pointSize: 35))?.withTintColor(.systemBlue,renderingMode: .alwaysOriginal), for: [.normal])
+        self.shareBtn = UIButton(frame: CGRect(x: self.view.frame.width - 70, y: 4, width: 30, height: 30))
+        self.shareBtn.setBackgroundImage(UIImage.init(systemName: "square.and.arrow.up", withConfiguration: UIImage.SymbolConfiguration(pointSize: 20))?.withTintColor(.white,renderingMode: .alwaysOriginal), for: [.normal])
         self.shareBtn.addTarget(self, action: #selector(self.saveToAlbum), for: .touchUpInside)
         self.scrollView.addSubview(self.shareBtn)
         
         self.toakePhoto = UIButton(frame: CGRect(x: 30, y: 0, width: 50, height: 50))
-        self.toakePhoto.setImage(UIImage.init(systemName: "photo", withConfiguration: UIImage.SymbolConfiguration(pointSize: 35))?.withTintColor(.systemBlue,renderingMode: .alwaysOriginal), for: [.normal])
+        self.toakePhoto.setImage(UIImage.init(systemName: "photo.fill.on.rectangle.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 20))?.withTintColor(.white,renderingMode: .alwaysOriginal), for: [.normal])
         self.toakePhoto.addTarget(self, action: #selector(self.choseSourceTypr), for: .touchUpInside)
         self.scrollView.addSubview(self.toakePhoto)
         
@@ -73,7 +74,8 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
         ImageView.contentMode = .scaleAspectFit
         self.scrollView.addSubview(ImageView)
         
-        self.addThumbnail()
+//        self.addThumbnail()
+        self.addThumbnailPicker()
         
     }
     
@@ -81,6 +83,7 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
     /// 添加预览缩略图Table
     func addThumbnail() {
         self.ThumbnilTable = UITableView()
+        self.ThumbnilTable.backgroundColor = .black
         self.ThumbnilTable = UITableView(frame: CGRect(x: 0, y: 0, width: 100 , height: self.view.frame.width - 60))
         self.ThumbnilTable.center = CGPoint(x: self.view.center.x, y: self.ImageView.frame.maxY + 80)
         //为了实现横向滚动效果，旋转90度
@@ -93,6 +96,16 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
         }
         self.ThumbnilTable.separatorStyle = .none
         self.scrollView.addSubview(self.ThumbnilTable)
+    }
+    
+    func addThumbnailPicker() {
+        let pickerView = ThumbnailPicker(frame: CGRect(x: 0, y: 0, width: 100 , height: self.view.frame.width))
+        pickerView.center = CGPoint(x: self.view.center.x, y: self.ImageView.frame.maxY + 80)
+        pickerView.transform = CGAffineTransform.init(rotationAngle: -CGFloat(Double.pi/2))
+        pickerView.delegate = self
+        pickerView.dataSource = self
+        pickerView.scalesLargeContentImage = true
+        self.scrollView.addSubview(pickerView)
     }
     
     /// 添加滤镜效果
@@ -256,12 +269,40 @@ extension ViewController:UIImagePickerControllerDelegate {
         DispatchQueue.main.async {
             self.dismiss(animated: true, completion: nil)
             if let photo = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
-                print("获取图片", photo.pngData()!)
                 self.image = photo
             }else {
                 print("未能获取")
             }
         }
+    }
+    
+}
+
+extension ViewController:UIPickerViewDelegate, UIPickerViewDataSource {
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return self.FilterKeys.count
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
+        print("刷新", view)
+        let imageView = pickImageCell(frame: CGRect(x: 0, y: 0, width: 80, height: 80))
+        imageView.filterKeyString = self.FilterKeys[row]
+        imageView.thumbImage = self.image
+        return imageView
+    }
+    
+    
+    func pickerView(_ pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat {
+        return 90
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        self.selectedFilter = self.FilterKeys[row]
+        self.addFilter()
     }
     
 }
