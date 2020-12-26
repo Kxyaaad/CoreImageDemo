@@ -288,7 +288,6 @@ extension ViewController:UIPickerViewDelegate, UIPickerViewDataSource {
     }
     
     func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
-        print("刷新", view)
         let imageView = pickImageCell(frame: CGRect(x: 0, y: 0, width: 80, height: 80))
         imageView.filterKeyString = self.FilterKeys[row]
         imageView.thumbImage = self.image

@@ -22,7 +22,6 @@ class pickImageCell: UIImageView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.contentMode = .scaleAspectFill
-        self.addSubview(UIView())
     }
     
     func compressIMG(image : UIImage) -> UIImage{
