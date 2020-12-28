@@ -62,7 +62,7 @@ class ThumbnilCell: UITableViewCell {
     func compressIMG(image : UIImage) -> UIImage{
         let scale = image.size.width / 200
         let size = CGSize(width: image.size.width / scale, height: image.size.height / scale)
-        return image.reSizeImage(reSize: size, scale: 0)
+        return image.reSizeImage(reSize: size)
     }
     
     

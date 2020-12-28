@@ -15,8 +15,6 @@
 		04419F91258CB13200A1652B /* ThumbnilCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04419F90258CB13200A1652B /* ThumbnilCell.swift */; };
 		0473824125934268003AEDA4 /* UIExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0473824025934268003AEDA4 /* UIExtension.swift */; };
 		04A378D225903E570048C50E /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A378D125903E570048C50E /* ViewController.swift */; };
-		88F3905F2597260C007B115C /* ThumbnailPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F3905E2597260C007B115C /* ThumbnailPicker.swift */; };
-		88F3906225973229007B115C /* pickImageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F3906125973229007B115C /* pickImageCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,8 +28,6 @@
 		04419F90258CB13200A1652B /* ThumbnilCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnilCell.swift; sourceTree = "<group>"; };
 		0473824025934268003AEDA4 /* UIExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIExtension.swift; sourceTree = "<group>"; };
 		04A378D125903E570048C50E /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		88F3905E2597260C007B115C /* ThumbnailPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailPicker.swift; sourceTree = "<group>"; };
-		88F3906125973229007B115C /* pickImageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = pickImageCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,8 +77,6 @@
 			children = (
 				04A378D125903E570048C50E /* ViewController.swift */,
 				04419F90258CB13200A1652B /* ThumbnilCell.swift */,
-				88F3905E2597260C007B115C /* ThumbnailPicker.swift */,
-				88F3906125973229007B115C /* pickImageCell.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -165,8 +159,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				88F3905F2597260C007B115C /* ThumbnailPicker.swift in Sources */,
-				88F3906225973229007B115C /* pickImageCell.swift in Sources */,
 				04A378D225903E570048C50E /* ViewController.swift in Sources */,
 				04419F73258C586F00A1652B /* AppDelegate.swift in Sources */,
 				04419F91258CB13200A1652B /* ThumbnilCell.swift in Sources */,

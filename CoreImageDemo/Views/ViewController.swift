@@ -11,17 +11,20 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
     var scrollView: UIScrollView!
     var ImageView : UIImageView!
     var ThumbnilTable: UITableView!
+    var ThumbnailPicker: UIPickerView!
     var selectedFilter : String?
     var shareBtn : UIButton!
     var toakePhoto : UIButton!
     var image : UIImage? {
         didSet {
             self.addFilter()
-//            self.ThumbnilTable.reloadData()
+            //            self.ThumbnilTable.reloadData()
+            
         }
     }
     
     var imageWithFilter: UIImage?
+    var thumbnailImages:Array<UIImage?> = []
     
     let FilterKeys = [
         "CIColorCrossPolynomial",
@@ -76,7 +79,6 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
         
 //        self.addThumbnail()
         self.addThumbnailPicker()
-        
     }
     
     
@@ -99,13 +101,13 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
     }
     
     func addThumbnailPicker() {
-        let pickerView = ThumbnailPicker(frame: CGRect(x: 0, y: 0, width: 100 , height: self.view.frame.width))
-        pickerView.center = CGPoint(x: self.view.center.x, y: self.ImageView.frame.maxY + 80)
-        pickerView.transform = CGAffineTransform.init(rotationAngle: -CGFloat(Double.pi/2))
-        pickerView.delegate = self
-        pickerView.dataSource = self
-        pickerView.scalesLargeContentImage = true
-        self.scrollView.addSubview(pickerView)
+        self.ThumbnailPicker = UIPickerView(frame: CGRect(x: 0, y: 0, width: 100 , height: self.view.frame.width))
+        self.ThumbnailPicker.center = CGPoint(x: self.view.center.x, y: self.ImageView.frame.maxY + 80)
+        self.ThumbnailPicker.transform = CGAffineTransform.init(rotationAngle: -CGFloat(Double.pi/2))
+        self.ThumbnailPicker.delegate = self
+        self.ThumbnailPicker.dataSource = self
+        
+        self.scrollView.addSubview(self.ThumbnailPicker)
     }
     
     /// 添加滤镜效果
@@ -195,7 +197,7 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
             UIImageWriteToSavedPhotosAlbum(self.imageWithFilter!, self, #selector(self.imageSave(image:didFinishSavingWithError:contextInfo:)), nil)
         }else {
             let alterController = UIAlertController(title: nil, message: "选择图片为空", preferredStyle: .alert)
-          
+            
             let cancel = UIAlertAction(title: "确定", style: .cancel) { (_) in
                 alterController.dismiss(animated: true) {
                     
@@ -213,7 +215,7 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
     @objc func imageSave(image:UIImage, didFinishSavingWithError error:NSError?, contextInfo:UnsafeRawPointer) {
         if error == nil {
             let alterController = UIAlertController(title: "保存成功", message: "请到相册中查看", preferredStyle: .alert)
-          
+            
             let cancel = UIAlertAction(title: "确定", style: .cancel) { (_) in
                 alterController.dismiss(animated: true) {
                     
@@ -225,7 +227,7 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
             }
         }else{
             let alterController = UIAlertController(title: "保存错误", message: error!.description, preferredStyle: .alert)
-          
+            
             let cancel = UIAlertAction(title: "确定", style: .cancel) { (_) in
                 alterController.dismiss(animated: true) {
                     
@@ -261,6 +263,7 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
         self.selectedFilter = self.FilterKeys[indexPath.row]
         self.addFilter()
     }
+    
 }
 
 extension ViewController:UIImagePickerControllerDelegate {
@@ -270,6 +273,24 @@ extension ViewController:UIImagePickerControllerDelegate {
             self.dismiss(animated: true, completion: nil)
             if let photo = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
                 self.image = photo
+                self.thumbnailImages = []
+                //渲染图片
+                let que = DispatchQueue(label: "add_fliter")
+                let group = DispatchGroup()
+                que.async {
+                    for filter in self.FilterKeys {
+                        let image = photo.addFilter(filterKrey: filter, toScale: 200 / photo.size.width)
+                        self.thumbnailImages.append(image)
+                    }
+                }
+                group.notify(queue: que) {
+                    DispatchQueue.main.async {
+                        self.ThumbnailPicker.reloadAllComponents()
+                    }
+                    
+                }
+                
+                
             }else {
                 print("未能获取")
             }
@@ -288,12 +309,15 @@ extension ViewController:UIPickerViewDelegate, UIPickerViewDataSource {
     }
     
     func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
-        let imageView = pickImageCell(frame: CGRect(x: 0, y: 0, width: 80, height: 80))
-        imageView.filterKeyString = self.FilterKeys[row]
-        imageView.thumbImage = self.image
-        return imageView
+        let imageview = UIImageView(frame: CGRect(x: 0, y: 0, width: 80, height: 80))
+        if self.thumbnailImages.count > 0 {
+            imageview.image = self.thumbnailImages[row]
+        }
+        imageview.contentMode = .scaleAspectFit
+        imageview.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi/2))
+        return imageview
+        
     }
-    
     
     func pickerView(_ pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat {
         return 90
@@ -305,4 +329,3 @@ extension ViewController:UIPickerViewDelegate, UIPickerViewDataSource {
     }
     
 }
-
