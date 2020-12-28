@@ -77,7 +77,7 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
         ImageView.contentMode = .scaleAspectFit
         self.scrollView.addSubview(ImageView)
         
-//        self.addThumbnail()
+        //        self.addThumbnail()
         self.addThumbnailPicker()
     }
     
@@ -113,29 +113,7 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
     /// 添加滤镜效果
     func addFilter() {
         guard self.image != nil else {return}
-        if self.selectedFilter != nil {
-            let originalImage = CIImage(image: self.image!)
-            
-            let filter = CIFilter(name: self.selectedFilter!)!
-            filter.setValue(originalImage, forKey: kCIInputImageKey)
-            
-            //判断是否具有某些可调整的参数
-            if (filter.inputKeys.contains("inputIntensity")) {
-                filter.setValue(0.5, forKey: kCIInputIntensityKey)
-            }
-            
-            let context = CIContext()
-            let cgImg = context.createCGImage(filter.outputImage!, from: filter.outputImage!.extent)
-            let img = UIImage(cgImage: cgImg!)
-            DispatchQueue.main.async {
-                self.ImageView.image = img
-                self.imageWithFilter = img
-            }
-        } else {
-            self.ImageView.image = self.image
-        }
-        
-        
+        self.ImageView.image = self.image?.addFilter(filterKey: self.selectedFilter)
         
     }
     
@@ -275,20 +253,33 @@ extension ViewController:UIImagePickerControllerDelegate {
                 self.image = photo
                 self.thumbnailImages = []
                 //渲染图片
-                let que = DispatchQueue(label: "add_fliter")
-                let group = DispatchGroup()
+                let que = DispatchQueue(label: "test")
                 que.async {
                     for filter in self.FilterKeys {
-                        let image = photo.addFilter(filterKrey: filter, toScale: 200 / photo.size.width)
-                        self.thumbnailImages.append(image)
+                        let que = DispatchQueue(label: filter)
+                        let group = DispatchGroup()
+                        que.sync {
+                            let image = photo.addFilter(filterKrey: filter, toScale: 200 / photo.size.width)
+    //                        self.thumbnailImages.append(image)
+                            if self.thumbnailImages.count <= self.FilterKeys.firstIndex(of: filter)! {
+                                self.thumbnailImages.append(image)
+                            }else {
+                                self.thumbnailImages[self.FilterKeys.firstIndex(of: filter)!] = image
+                            }
+                            
+                        }
+                        group.notify(queue: que) {
+                            DispatchQueue.main.async {
+                                self.ThumbnailPicker.reloadAllComponents()
+                            }
+                        }
                     }
                 }
-                group.notify(queue: que) {
-                    DispatchQueue.main.async {
-                        self.ThumbnailPicker.reloadAllComponents()
-                    }
+                
+//
                     
-                }
+                    
+//                }
                 
                 
             }else {
@@ -310,7 +301,7 @@ extension ViewController:UIPickerViewDelegate, UIPickerViewDataSource {
     
     func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
         let imageview = UIImageView(frame: CGRect(x: 0, y: 0, width: 80, height: 80))
-        if self.thumbnailImages.count > 0 {
+        if self.thumbnailImages.count >= row + 1 {
             imageview.image = self.thumbnailImages[row]
         }
         imageview.contentMode = .scaleAspectFit
