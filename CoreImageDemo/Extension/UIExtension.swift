@@ -35,19 +35,13 @@ extension UIImage {
     
     func addFilter(filterKrey:String?, toScale scale:CGFloat ) -> UIImage {
         let size = CGSize(width: self.size.width * scale, height: self.size.height * scale)
-        let compressImage = reSizeImage(reSize: size)
-        let originalImage = compressImage
+        let originalImage = reSizeImage(reSize: size)
         let originalCIImage = CIImage(image: originalImage)
-            guard let filter = CIFilter(name: filterKrey ?? "" ) else {return self}
-            filter.setValue(originalCIImage, forKey: kCIInputImageKey)
-            
-            //判断是否具有某些可调整的参数
-            if (filter.inputKeys.contains("inputIntensity")) {
-                filter.setValue(0.5, forKey: kCIInputIntensityKey)
-            }
-            
-            let context = CIContext()
-            guard let cgImg : CGImage = context.createCGImage(filter.outputImage ?? CIImage(), from: (filter.outputImage ?? CIImage()).extent) else { return self}
+        guard let filter = CIFilter(name: filterKrey ?? "" ) else {return self}
+        filter.setValue(originalCIImage, forKey: kCIInputImageKey)
+        
+        let context = CIContext()
+        guard let cgImg : CGImage = context.createCGImage(filter.outputImage ?? CIImage(), from: (filter.outputImage ?? CIImage()).extent) else { return self}
         return UIImage(cgImage: cgImg)
     }
 }

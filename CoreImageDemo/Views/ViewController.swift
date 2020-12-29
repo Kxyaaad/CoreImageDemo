@@ -253,34 +253,25 @@ extension ViewController:UIImagePickerControllerDelegate {
                 self.image = photo
                 self.thumbnailImages = []
                 //渲染图片
-                let que = DispatchQueue(label: "test")
+                let que = DispatchQueue(label: "render_image")
+                let group = DispatchGroup()
+                let compressImage = self.image?.reSizeImage(reSize: CGSize(width: 200, height: photo.size.height * (200 / photo.size.width)))
                 que.async {
                     for filter in self.FilterKeys {
-                        let que = DispatchQueue(label: filter)
-                        let group = DispatchGroup()
-                        que.sync {
-                            let image = photo.addFilter(filterKrey: filter, toScale: 200 / photo.size.width)
-    //                        self.thumbnailImages.append(image)
-                            if self.thumbnailImages.count <= self.FilterKeys.firstIndex(of: filter)! {
-                                self.thumbnailImages.append(image)
-                            }else {
-                                self.thumbnailImages[self.FilterKeys.firstIndex(of: filter)!] = image
-                            }
-                            
+                        let image = compressImage!.addFilter(filterKey: filter)
+                        if self.thumbnailImages.count <= self.FilterKeys.firstIndex(of: filter)! {
+                            self.thumbnailImages.append(image)
+                        }else {
+                            self.thumbnailImages[self.FilterKeys.firstIndex(of: filter)!] = image
                         }
-                        group.notify(queue: que) {
-                            DispatchQueue.main.async {
-                                self.ThumbnailPicker.reloadAllComponents()
-                            }
-                        }
+                        
                     }
                 }
-                
-//
-                    
-                    
-//                }
-                
+                group.notify(queue: que) {
+                    DispatchQueue.main.async {
+                        self.ThumbnailPicker.reloadAllComponents()
+                    }
+                }
                 
             }else {
                 print("未能获取")
