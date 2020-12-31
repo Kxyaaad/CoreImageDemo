@@ -49,11 +49,6 @@ extension UIImage {
 
         callback(filter.inputKeys) // 回调
 
-//        if (filter.inputKeys.contains("inputColor")) {
-//            print("添加颜色")
-//            let cicolor = CIColor(red: 0, green:0, blue: 1)
-//            filter.setValue(cicolor, forKey: kCIInputColorKey)
-//        }
         
         for inputValue in InputValues {
             switch inputValue.key {
@@ -65,8 +60,6 @@ extension UIImage {
         }
 
         let context = CIContext.init(mtlDevice: MTLCreateSystemDefaultDevice()!)
-//                    guard let cgImg : CGImage = context.createCGImage(filter.outputImage ?? CIImage(), from: (filter.outputImage ?? CIImage()).extent) else { return self}
-//                    return UIImage(cgImage: cgImg)
         guard let cgImg : CGImage = context.createCGImage(filter.outputImage ?? CIImage(), from: (filter.outputImage ?? CIImage()).extent) else { return self}
         return UIImage(cgImage: cgImg)
 //        return self

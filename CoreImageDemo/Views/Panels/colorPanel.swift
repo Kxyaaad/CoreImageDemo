@@ -54,22 +54,24 @@ class colorPanel: UIView {
     }
     
     @objc func sliderValueChanged(_ sender:UISlider) {
-        print("滑块",sender.value)
-        switch sender {
-        case self.redSlider:
-            self.redValue = CGFloat(sender.value)
-            self.redSlider.tintColor = UIColor(red: self.redValue, green: 0, blue: 0, alpha: 1)
-        case self.greenSlider:
-            self.greenValue = CGFloat(sender.value)
-            self.greenSlider.tintColor = UIColor(red: 0, green: self.greenValue, blue: 0, alpha: 1)
-        case self.blueSlider:
-            self.blueValue = CGFloat(sender.value)
-            self.blueSlider.tintColor = UIColor(red: 0, green: 0, blue: self.blueValue, alpha: 1)
-        default:
-            return
+        DispatchQueue.main.async { [self] in
+            switch sender {
+            case self.redSlider:
+                self.redValue = CGFloat(sender.value)
+                self.redSlider.tintColor = UIColor(red: self.redValue, green: 0, blue: 0, alpha: 1)
+            case self.greenSlider:
+                self.greenValue = CGFloat(sender.value)
+                self.greenSlider.tintColor = UIColor(red: 0, green: self.greenValue, blue: 0, alpha: 1)
+            case self.blueSlider:
+                self.blueValue = CGFloat(sender.value)
+                self.blueSlider.tintColor = UIColor(red: 0, green: 0, blue: self.blueValue, alpha: 1)
+            default:
+                return
+            }
+            self.setColor = UIColor(red: self.redValue, green: self.greenValue, blue: self.blueValue, alpha: 1)
+            delegate?.didSetColorValue(colorValue: self.setColor)
         }
-        self.setColor = UIColor(red: self.redValue, green: self.greenValue, blue: self.blueValue, alpha: 1)
-        delegate?.didSetColorValue(colorValue: self.setColor)
+       
     }
 
 }
