@@ -8,28 +8,31 @@
 import UIKit
 
 class ViewController: UIViewController, UINavigationControllerDelegate {
-    var scrollView: UIScrollView!
-    var ImageView : UIImageView!
-    var ThumbnilTable: UITableView!
-    var ThumbnailPicker: UIPickerView!
-    var selectedFilter : String?
-    var shareBtn : UIButton!
-    var toakePhoto : UIButton!
-    var image : UIImage? {
-        didSet {
-            self.addFilter()
-            //            self.ThumbnilTable.reloadData()
-            
+    var scrollView: UIScrollView! //可滑动主视图
+    var ImageView : UIImageView! //预览大图
+    var ThumbnilTable: UITableView! //预览小图TableView
+    var ThumbnailPicker: UIPickerView! //预览小图PickerView
+    var selectedFilter : String? { //被选中的滤镜
+        willSet {
+            self.filterTitle.text = newValue
         }
     }
+    var filterTitle: UITextField! //选中滤镜标题
+    var shareBtn : UIButton! //分享保存按钮
+    var toakePhoto : UIButton! //选择照片按钮
+    var image : UIImage? { //原图出具
+        didSet {
+            self.addFilter()
+        }
+    }
+    var imageWithFilter: UIImage? //添加滤镜后的原图
+    var thumbnailImages:Array<UIImage?> = [] //缩略图数组
     
-    var imageWithFilter: UIImage?
-    var thumbnailImages:Array<UIImage?> = []
+    var panelView  = colorPanel()
+    var filterInputSetings : Dictionary<String, Any>? //调节滤镜需要传入的参数
     
     let FilterKeys = [
-        "CIColorCrossPolynomial",
         "CIColorCube",
-        "CIColorCubeWithColorSpace",
         "CIColorInvert",
         "CIColorMonochrome",
         "CIColorPosterize",
@@ -59,7 +62,6 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
     func creatUI() {
         self.view.backgroundColor = .black
         self.scrollView = UIScrollView(frame: CGRect(x: 0, y: (UIApplication.shared.windows.first?.windowScene?.statusBarManager?.statusBarFrame.height)!, width: self.view.frame.width, height: self.view.frame.height - (UIApplication.shared.windows.first?.windowScene?.statusBarManager?.statusBarFrame.height)!))
-        self.scrollView.contentSize = CGSize(width: self.view.frame.width, height: self.view.frame.height)
         self.scrollView.showsVerticalScrollIndicator = false
         self.view.addSubview(self.scrollView)
         
@@ -77,8 +79,17 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
         ImageView.contentMode = .scaleAspectFit
         self.scrollView.addSubview(ImageView)
         
-        //        self.addThumbnail()
+        self.filterTitle = UITextField(frame: CGRect(x: 0, y: 0, width: 300, height: 50))
+        self.filterTitle.center = CGPoint(x: self.view.center.x, y: self.ImageView.frame.maxY + 25)
+        self.filterTitle.textAlignment = .center
+        self.filterTitle.textColor = .white
+        self.filterTitle.text = self.selectedFilter
+        self.scrollView.addSubview(self.filterTitle)
+        
         self.addThumbnailPicker()
+        self.addControlPanel()
+        
+        self.scrollView.contentSize = CGSize(width: self.view.frame.width, height: self.panelView.frame.maxY + 20)
     }
     
     
@@ -87,7 +98,7 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
         self.ThumbnilTable = UITableView()
         self.ThumbnilTable.backgroundColor = .black
         self.ThumbnilTable = UITableView(frame: CGRect(x: 0, y: 0, width: 100 , height: self.view.frame.width - 60))
-        self.ThumbnilTable.center = CGPoint(x: self.view.center.x, y: self.ImageView.frame.maxY + 80)
+        self.ThumbnilTable.center = CGPoint(x: self.view.center.x, y: self.ImageView.frame.maxY + 100)
         //为了实现横向滚动效果，旋转90度
         self.ThumbnilTable.transform = CGAffineTransform.init(rotationAngle: -CGFloat(Double.pi/2))
         self.ThumbnilTable.showsVerticalScrollIndicator = false
@@ -101,8 +112,8 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
     }
     
     func addThumbnailPicker() {
-        self.ThumbnailPicker = UIPickerView(frame: CGRect(x: 0, y: 0, width: 100 , height: self.view.frame.width))
-        self.ThumbnailPicker.center = CGPoint(x: self.view.center.x, y: self.ImageView.frame.maxY + 80)
+        self.ThumbnailPicker = UIPickerView(frame: CGRect(x: 0, y: 0, width: 150 , height: self.view.frame.width))
+        self.ThumbnailPicker.center = CGPoint(x: self.view.center.x, y: self.ImageView.frame.maxY + 100)
         self.ThumbnailPicker.transform = CGAffineTransform.init(rotationAngle: -CGFloat(Double.pi/2))
         self.ThumbnailPicker.delegate = self
         self.ThumbnailPicker.dataSource = self
@@ -110,11 +121,20 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
         self.scrollView.addSubview(self.ThumbnailPicker)
     }
     
+    func addControlPanel() {
+        panelView = colorPanel(frame: CGRect(x: 0, y: 0, width: self.scrollView.frame.width - 50, height: 150))
+        panelView.center = CGPoint(x: self.scrollView.center.x, y: self.ThumbnailPicker.frame.maxY + 90)
+        panelView.backgroundColor = .black
+        panelView.delegate = self
+        scrollView.addSubview(panelView)
+    }
+    
     /// 添加滤镜效果
     func addFilter() {
         guard self.image != nil else {return}
-        self.ImageView.image = self.image?.addFilter(filterKey: self.selectedFilter)
-        
+        self.ImageView.image = self.image?.addFilter(filterKey: self.selectedFilter, callback: { (filterInputKeys) in
+            print("可调参数", filterInputKeys)
+        })
     }
     
     /// 选择拍摄还是相册导入
@@ -247,7 +267,6 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
 extension ViewController:UIImagePickerControllerDelegate {
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        DispatchQueue.main.async {
             self.dismiss(animated: true, completion: nil)
             if let photo = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
                 self.image = photo
@@ -258,7 +277,8 @@ extension ViewController:UIImagePickerControllerDelegate {
                 let compressImage = self.image?.reSizeImage(reSize: CGSize(width: 200, height: photo.size.height * (200 / photo.size.width)))
                 que.async {
                     for filter in self.FilterKeys {
-                        let image = compressImage!.addFilter(filterKey: filter)
+                        let image = compressImage!.addFilter(filterKey: filter) { (filterInputKeys) in
+                        }
                         if self.thumbnailImages.count <= self.FilterKeys.firstIndex(of: filter)! {
                             self.thumbnailImages.append(image)
                         }else {
@@ -277,7 +297,6 @@ extension ViewController:UIImagePickerControllerDelegate {
                 print("未能获取")
             }
         }
-    }
     
 }
 
@@ -308,6 +327,20 @@ extension ViewController:UIPickerViewDelegate, UIPickerViewDataSource {
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         self.selectedFilter = self.FilterKeys[row]
         self.addFilter()
+    }
+    
+}
+
+extension ViewController: ColorPanelDelegate {
+    func didSetColorValue(colorValue: UIColor) {
+        let filterCiColor = CIColor(color: colorValue)
+        self.filterInputSetings = ["inputColor":filterCiColor]
+        DispatchQueue.main.async {
+            self.ImageView.image = self.image?.addFilter(filterKey: self.selectedFilter, withInputSetings: self.filterInputSetings!, callback: { (_) in
+                
+            })
+        }
+        
     }
     
 }

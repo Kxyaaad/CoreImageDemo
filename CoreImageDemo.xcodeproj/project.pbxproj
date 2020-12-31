@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		042F19C5259B1CF400C2E315 /* colorPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042F19C4259B1CF300C2E315 /* colorPanel.swift */; };
 		04419F73258C586F00A1652B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04419F72258C586F00A1652B /* AppDelegate.swift */; };
 		04419F75258C586F00A1652B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04419F74258C586F00A1652B /* SceneDelegate.swift */; };
 		04419F7A258C586F00A1652B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 04419F78258C586F00A1652B /* Main.storyboard */; };
@@ -18,6 +19,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		042F19C4259B1CF300C2E315 /* colorPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = colorPanel.swift; sourceTree = "<group>"; };
 		04419F6F258C586F00A1652B /* CoreImageDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CoreImageDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		04419F72258C586F00A1652B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		04419F74258C586F00A1652B /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -41,6 +43,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		042F19C2259B18A800C2E315 /* Panels */ = {
+			isa = PBXGroup;
+			children = (
+				042F19C4259B1CF300C2E315 /* colorPanel.swift */,
+			);
+			path = Panels;
+			sourceTree = "<group>";
+		};
 		04419F66258C586F00A1652B = {
 			isa = PBXGroup;
 			children = (
@@ -75,6 +85,7 @@
 		04419F8F258CB11200A1652B /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				042F19C2259B18A800C2E315 /* Panels */,
 				04A378D125903E570048C50E /* ViewController.swift */,
 				04419F90258CB13200A1652B /* ThumbnilCell.swift */,
 			);
@@ -161,6 +172,7 @@
 			files = (
 				04A378D225903E570048C50E /* ViewController.swift in Sources */,
 				04419F73258C586F00A1652B /* AppDelegate.swift in Sources */,
+				042F19C5259B1CF400C2E315 /* colorPanel.swift in Sources */,
 				04419F91258CB13200A1652B /* ThumbnilCell.swift in Sources */,
 				0473824125934268003AEDA4 /* UIExtension.swift in Sources */,
 				04419F75258C586F00A1652B /* SceneDelegate.swift in Sources */,
