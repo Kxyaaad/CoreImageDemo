@@ -10,6 +10,11 @@ import UIKit
 class ViewController: UIViewController, UINavigationControllerDelegate {
     var scrollView: UIScrollView! //可滑动主视图
     var ImageView : UIImageView! //预览大图
+    var imageReview: UIImage? { //原图出具
+        didSet {
+            self.addFilter()
+        }
+    }//预览效果图片
     var ThumbnilTable: UITableView! //预览小图TableView
     var ThumbnailPicker: UIPickerView! //预览小图PickerView
     var selectedFilter : String? { //被选中的滤镜
@@ -20,12 +25,9 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
     var filterTitle: UITextField! //选中滤镜标题
     var shareBtn : UIButton! //分享保存按钮
     var toakePhoto : UIButton! //选择照片按钮
-    var image : UIImage? { //原图出具
-        didSet {
-            self.addFilter()
-        }
-    }
+    var image : UIImage?
     var imageWithFilter: UIImage? //添加滤镜后的原图
+    
     var thumbnailImages:Array<UIImage?> = [] //缩略图数组
     
     var panelView  = colorPanel()
@@ -87,7 +89,6 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
         self.scrollView.addSubview(self.filterTitle)
         
         self.addThumbnailPicker()
-        self.addControlPanel()
         
         self.scrollView.contentSize = CGSize(width: self.view.frame.width, height: self.panelView.frame.maxY + 20)
     }
@@ -131,10 +132,12 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
     
     /// 添加滤镜效果
     func addFilter() {
-        guard self.image != nil else {return}
-        self.ImageView.image = self.image?.addFilter(filterKey: self.selectedFilter, callback: { (filterInputKeys) in
-            print("可调参数", filterInputKeys)
-        })
+        DispatchQueue.main.async {
+            guard self.image != nil else {return}
+            self.ImageView.image = self.imageReview?.addFilter(filterKey: self.selectedFilter, callback: { (filterInputKeys) in
+                //            print("可调参数", filterInputKeys)
+            })
+        }
     }
     
     /// 选择拍摄还是相册导入
@@ -267,36 +270,37 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
 extension ViewController:UIImagePickerControllerDelegate {
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-            self.dismiss(animated: true, completion: nil)
-            if let photo = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
-                self.image = photo
-                self.thumbnailImages = []
-                //渲染图片
-                let que = DispatchQueue(label: "render_image")
-                let group = DispatchGroup()
-                let compressImage = self.image?.reSizeImage(reSize: CGSize(width: 200, height: photo.size.height * (200 / photo.size.width)))
-                que.async {
-                    for filter in self.FilterKeys {
-                        let image = compressImage!.addFilter(filterKey: filter) { (filterInputKeys) in
-                        }
-                        if self.thumbnailImages.count <= self.FilterKeys.firstIndex(of: filter)! {
-                            self.thumbnailImages.append(image)
-                        }else {
-                            self.thumbnailImages[self.FilterKeys.firstIndex(of: filter)!] = image
-                        }
-                        
+        self.dismiss(animated: true, completion: nil)
+        if let photo = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
+            self.image = photo
+            self.imageReview = photo.reSizeImage(reSize: CGSize(width: self.ImageView.frame.width, height: photo.size.height * (self.ImageView.frame.width / photo.size.width)))
+            self.thumbnailImages = []
+            //渲染图片
+            let que = DispatchQueue(label: "render_image")
+            let group = DispatchGroup()
+            let compressImage = self.image?.reSizeImage(reSize: CGSize(width: 200, height: photo.size.height * (200 / photo.size.width)))
+            que.async {
+                for filter in self.FilterKeys {
+                    let image = compressImage!.addFilter(filterKey: filter) { (filterInputKeys) in
                     }
-                }
-                group.notify(queue: que) {
-                    DispatchQueue.main.async {
-                        self.ThumbnailPicker.reloadAllComponents()
+                    if self.thumbnailImages.count <= self.FilterKeys.firstIndex(of: filter)! {
+                        self.thumbnailImages.append(image)
+                    }else {
+                        self.thumbnailImages[self.FilterKeys.firstIndex(of: filter)!] = image
                     }
+                    
                 }
-                
-            }else {
-                print("未能获取")
             }
+            group.notify(queue: que) {
+                DispatchQueue.main.async {
+                    self.ThumbnailPicker.reloadAllComponents()
+                }
+            }
+            
+        }else {
+            print("未能获取")
         }
+    }
     
 }
 
@@ -326,6 +330,18 @@ extension ViewController:UIPickerViewDelegate, UIPickerViewDataSource {
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         self.selectedFilter = self.FilterKeys[row]
+        if row == 2 {
+            if !self.scrollView.subviews.contains(self.panelView) {
+                self.addControlPanel()
+            }else {
+                print("不包含")
+            }
+            
+        } else {
+            if self.scrollView.subviews.contains(self.panelView) {
+                self.panelView.removeFromSuperview()
+            }
+        }
         self.addFilter()
     }
     
@@ -333,14 +349,17 @@ extension ViewController:UIPickerViewDelegate, UIPickerViewDataSource {
 
 extension ViewController: ColorPanelDelegate {
     func didSetColorValue(colorValue: UIColor) {
-        let filterCiColor = CIColor(color: colorValue)
-        self.filterInputSetings = ["inputColor":filterCiColor]
-        DispatchQueue.main.async {
-            self.ImageView.image = self.image?.addFilter(filterKey: self.selectedFilter, withInputSetings: self.filterInputSetings!, callback: { (_) in
-                
-            })
+        let que = DispatchQueue(label: colorValue.description)
+        que.async {
+            let filterCiColor = CIColor(color: colorValue)
+            self.filterInputSetings = ["inputColor":filterCiColor]
+            DispatchQueue.main.async {
+                self.ImageView.image = self.imageReview?.addFilter(filterKey: self.selectedFilter, withInputSetings: self.filterInputSetings!, callback: { (_) in
+                    
+                })
+            }
         }
         
+        
     }
-    
 }
