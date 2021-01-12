@@ -30,7 +30,7 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
     
     var thumbnailImages:Array<UIImage?> = [] //缩略图数组
     
-    var panelView  = colorPanel()
+    lazy var panelView  = colorPanel()
     var filterInputSetings : Dictionary<String, Any>? //调节滤镜需要传入的参数
     
     let FilterKeys = [
