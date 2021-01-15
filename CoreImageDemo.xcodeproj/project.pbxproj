@@ -15,6 +15,7 @@
 		04419F7F258C587000A1652B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 04419F7D258C587000A1652B /* LaunchScreen.storyboard */; };
 		04419F91258CB13200A1652B /* ThumbnilCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04419F90258CB13200A1652B /* ThumbnilCell.swift */; };
 		0473824125934268003AEDA4 /* UIExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0473824025934268003AEDA4 /* UIExtension.swift */; };
+		049CDE9B25AD73F1003466B6 /* intensityPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049CDE9A25AD73F1003466B6 /* intensityPanel.swift */; };
 		04A378D225903E570048C50E /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A378D125903E570048C50E /* ViewController.swift */; };
 /* End PBXBuildFile section */
 
@@ -29,6 +30,7 @@
 		04419F80258C587000A1652B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		04419F90258CB13200A1652B /* ThumbnilCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnilCell.swift; sourceTree = "<group>"; };
 		0473824025934268003AEDA4 /* UIExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIExtension.swift; sourceTree = "<group>"; };
+		049CDE9A25AD73F1003466B6 /* intensityPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = intensityPanel.swift; sourceTree = "<group>"; };
 		04A378D125903E570048C50E /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -47,6 +49,7 @@
 			isa = PBXGroup;
 			children = (
 				042F19C4259B1CF300C2E315 /* colorPanel.swift */,
+				049CDE9A25AD73F1003466B6 /* intensityPanel.swift */,
 			);
 			path = Panels;
 			sourceTree = "<group>";
@@ -173,6 +176,7 @@
 				04A378D225903E570048C50E /* ViewController.swift in Sources */,
 				04419F73258C586F00A1652B /* AppDelegate.swift in Sources */,
 				042F19C5259B1CF400C2E315 /* colorPanel.swift in Sources */,
+				049CDE9B25AD73F1003466B6 /* intensityPanel.swift in Sources */,
 				04419F91258CB13200A1652B /* ThumbnilCell.swift in Sources */,
 				0473824125934268003AEDA4 /* UIExtension.swift in Sources */,
 				04419F75258C586F00A1652B /* SceneDelegate.swift in Sources */,

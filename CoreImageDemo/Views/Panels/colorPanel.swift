@@ -32,7 +32,7 @@ class colorPanel: UIView {
     }
     
     func createUI() {
-        self.redSlider = UISlider(frame: CGRect(x: 0, y: 0, width: self.frame.width - 50, height: 20))
+        self.redSlider = UISlider(frame: CGRect(x: 0, y: 0, width: self.frame.width - 50, height: 50))
         self.redSlider.center = CGPoint(x:self.frame.width/2 , y:self.frame.height / 6)
         self.redSlider.minimumValue = 0.0
         self.redSlider.maximumValue = 1.0
@@ -40,7 +40,7 @@ class colorPanel: UIView {
         self.redSlider.addTarget(self, action: #selector(sliderValueChanged(_:)), for: .valueChanged)
         self.addSubview(self.redSlider)
         
-        self.greenSlider = UISlider(frame: CGRect(x: 0, y: 0, width: self.frame.width - 50, height: 20))
+        self.greenSlider = UISlider(frame: CGRect(x: 0, y: 0, width: self.frame.width - 50, height: 50))
         self.greenSlider.center = CGPoint(x:self.frame.width/2 , y:self.frame.height / 2)
         self.greenSlider.minimumValue = 0.0
         self.greenSlider.maximumValue = 1.0
@@ -48,7 +48,7 @@ class colorPanel: UIView {
         self.greenSlider.addTarget(self, action: #selector(sliderValueChanged(_:)), for: .valueChanged)
         self.addSubview(self.greenSlider)
         
-        self.blueSlider = UISlider(frame: CGRect(x: 0, y: 0, width: self.frame.width - 50, height: 20))
+        self.blueSlider = UISlider(frame: CGRect(x: 0, y: 0, width: self.frame.width - 50, height: 50))
         self.blueSlider.center = CGPoint(x:self.frame.width/2 , y:self.frame.height / 6 * 5)
         self.blueSlider.minimumValue = 0.0
         self.blueSlider.maximumValue = 1.0

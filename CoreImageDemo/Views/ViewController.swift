@@ -8,7 +8,6 @@
 import UIKit
 
 class ViewController: UIViewController, UINavigationControllerDelegate {
-    var scrollView: UIScrollView! //可滑动主视图
     var ImageView : UIImageView! //预览大图
     var imageReview: UIImage? { //原图出具
         didSet {
@@ -30,8 +29,10 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
     
     var thumbnailImages:Array<UIImage?> = [] //缩略图数组
     
-    lazy var panelView  = colorPanel()
-    var filterInputSetings : Dictionary<String, Any>? //调节滤镜需要传入的参数
+    lazy var panelView  = colorPanel() //调色板
+    var intensitySlider : UIIntensitySlider?//强度调控
+    
+    var filterInputSetings : Dictionary<String, Any> = [:]//调节滤镜需要传入的参数
     
     let FilterKeys = [
         "CIColorCube",
@@ -63,34 +64,31 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
     
     func creatUI() {
         self.view.backgroundColor = .black
-        self.scrollView = UIScrollView(frame: CGRect(x: 0, y: (UIApplication.shared.windows.first?.windowScene?.statusBarManager?.statusBarFrame.height)!, width: self.view.frame.width, height: self.view.frame.height - (UIApplication.shared.windows.first?.windowScene?.statusBarManager?.statusBarFrame.height)!))
-        self.scrollView.showsVerticalScrollIndicator = false
-        self.view.addSubview(self.scrollView)
-        
-        self.shareBtn = UIButton(frame: CGRect(x: self.view.frame.width - 70, y: 4, width: 30, height: 30))
+        self.shareBtn = UIButton(frame: CGRect(x: self.view.frame.width - 70, y: UIApplication.shared.windows[0].windowScene!.statusBarManager!.statusBarFrame.height + 10, width: 30, height: 30))
         self.shareBtn.setBackgroundImage(UIImage.init(systemName: "square.and.arrow.up", withConfiguration: UIImage.SymbolConfiguration(pointSize: 20))?.withTintColor(.white,renderingMode: .alwaysOriginal), for: [.normal])
         self.shareBtn.addTarget(self, action: #selector(self.saveToAlbum), for: .touchUpInside)
-        self.scrollView.addSubview(self.shareBtn)
+        self.view.addSubview(self.shareBtn)
         
-        self.toakePhoto = UIButton(frame: CGRect(x: 30, y: 0, width: 50, height: 50))
+        self.toakePhoto = UIButton(frame: CGRect(x: 30, y: UIApplication.shared.windows[0].windowScene!.statusBarManager!.statusBarFrame.height + 10, width: 50, height: 50))
         self.toakePhoto.setImage(UIImage.init(systemName: "photo.fill.on.rectangle.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 20))?.withTintColor(.white,renderingMode: .alwaysOriginal), for: [.normal])
         self.toakePhoto.addTarget(self, action: #selector(self.choseSourceTypr), for: .touchUpInside)
-        self.scrollView.addSubview(self.toakePhoto)
+        self.view.addSubview(self.toakePhoto)
         
-        self.ImageView = UIImageView(frame: CGRect(x: 50, y: 50, width: self.view.frame.width - 100, height: (self.view.frame.width - 100) / 3 * 4 ))
+        self.ImageView = UIImageView(frame: CGRect(x: 50, y: self.shareBtn.frame.maxY + 10 , width: self.view.frame.height / 3 / 4 * 3, height: self.view.frame.height / 3 ))
+        self.ImageView.center = CGPoint(x: self.view.center.x, y: self.ImageView.center.y)
         ImageView.contentMode = .scaleAspectFit
-        self.scrollView.addSubview(ImageView)
+        self.view.addSubview(ImageView)
         
         self.filterTitle = UITextField(frame: CGRect(x: 0, y: 0, width: 300, height: 50))
         self.filterTitle.center = CGPoint(x: self.view.center.x, y: self.ImageView.frame.maxY + 25)
         self.filterTitle.textAlignment = .center
         self.filterTitle.textColor = .white
         self.filterTitle.text = self.selectedFilter
-        self.scrollView.addSubview(self.filterTitle)
+        self.view.addSubview(self.filterTitle)
         
         self.addThumbnailPicker()
         
-        self.scrollView.contentSize = CGSize(width: self.view.frame.width, height: self.panelView.frame.maxY + 20)
+        
     }
     
     
@@ -109,7 +107,7 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
             self.ThumbnilTable.register(ThumbnilCell.self, forCellReuseIdentifier: id)
         }
         self.ThumbnilTable.separatorStyle = .none
-        self.scrollView.addSubview(self.ThumbnilTable)
+        self.view.addSubview(self.ThumbnilTable)
     }
     
     func addThumbnailPicker() {
@@ -119,15 +117,22 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
         self.ThumbnailPicker.delegate = self
         self.ThumbnailPicker.dataSource = self
         
-        self.scrollView.addSubview(self.ThumbnailPicker)
+        self.view.addSubview(self.ThumbnailPicker)
     }
     
     func addControlPanel() {
-        panelView = colorPanel(frame: CGRect(x: 0, y: 0, width: self.scrollView.frame.width - 50, height: 150))
-        panelView.center = CGPoint(x: self.scrollView.center.x, y: self.ThumbnailPicker.frame.maxY + 90)
+        panelView = colorPanel(frame: CGRect(x: 0, y: 0, width: self.view.frame.width - 50, height: 150))
+        panelView.center = CGPoint(x: self.view.center.x, y: self.ThumbnailPicker.frame.maxY + 90)
         panelView.backgroundColor = .black
         panelView.delegate = self
-        scrollView.addSubview(panelView)
+        self.view.addSubview(panelView)
+    }
+    
+    func addIntensitySlider(miniValue: CGFloat, maxValue: CGFloat, inputKey: String ) {
+        self.intensitySlider = UIIntensitySlider(miniValue: miniValue, maxValue: maxValue, inputKey: inputKey, frame: CGRect(x: 0, y: 0, width: self.view.frame.width - 100, height: 50))
+        self.intensitySlider!.center = CGPoint(x: self.view.center.x, y: self.panelView.frame.maxY+20)
+        self.intensitySlider!.delegate = self
+        self.view.addSubview(self.intensitySlider!)
     }
     
     /// 添加滤镜效果
@@ -135,7 +140,7 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
         DispatchQueue.main.async {
             guard self.image != nil else {return}
             self.ImageView.image = self.imageReview?.addFilter(filterKey: self.selectedFilter, callback: { (filterInputKeys) in
-                //            print("可调参数", filterInputKeys)
+                print("可调参数", filterInputKeys)
             })
         }
     }
@@ -194,7 +199,8 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
     }
     
     @objc func saveToAlbum() {
-        if  self.imageWithFilter != nil {
+        if  self.image != nil {
+            self.imageWithFilter = self.image!.addFilter(filterKey: self.selectedFilter, withInputSetings: self.filterInputSetings, callback: nil)
             UIImageWriteToSavedPhotosAlbum(self.imageWithFilter!, self, #selector(self.imageSave(image:didFinishSavingWithError:contextInfo:)), nil)
         }else {
             let alterController = UIAlertController(title: nil, message: "选择图片为空", preferredStyle: .alert)
@@ -273,7 +279,7 @@ extension ViewController:UIImagePickerControllerDelegate {
         self.dismiss(animated: true, completion: nil)
         if let photo = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
             self.image = photo
-            self.imageReview = photo.reSizeImage(reSize: CGSize(width: self.ImageView.frame.width, height: photo.size.height * (self.ImageView.frame.width / photo.size.width)))
+            self.imageReview = photo.reSizeImage(reSize: CGSize(width: photo.size.width * (self.ImageView.frame.height / photo.size.height), height: self.ImageView.frame.height))
             self.thumbnailImages = []
             //渲染图片
             let que = DispatchQueue(label: "render_image")
@@ -329,36 +335,52 @@ extension ViewController:UIPickerViewDelegate, UIPickerViewDataSource {
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        self.filterInputSetings = [:] // 清空滤镜效果
+        self.panelView.removeFromSuperview()
+        self.intensitySlider?.removeFromSuperview()
         self.selectedFilter = self.FilterKeys[row]
-        if row == 2 {
-            if !self.scrollView.subviews.contains(self.panelView) {
-                self.addControlPanel()
-            }else {
-                print("不包含")
-            }
-            
-        } else {
-            if self.scrollView.subviews.contains(self.panelView) {
-                self.panelView.removeFromSuperview()
-            }
+        
+        switch row {
+        case 2:
+            self.addControlPanel()
+            self.addIntensitySlider(miniValue: 0.0, maxValue: 1.0, inputKey: "inputColor")
+        case 3:
+            self.addIntensitySlider(miniValue: 0.0, maxValue: 10, inputKey: "inputLevels")
+        default:
+            break
         }
+        
         self.addFilter()
     }
     
 }
 
-extension ViewController: ColorPanelDelegate {
-    func didSetColorValue(colorValue: UIColor) {
-        let que = DispatchQueue(label: colorValue.description)
-        que.async {
-            let filterCiColor = CIColor(color: colorValue)
-            self.filterInputSetings = ["inputColor":filterCiColor]
-            DispatchQueue.main.async {
-                self.ImageView.image = self.imageReview?.addFilter(filterKey: self.selectedFilter, withInputSetings: self.filterInputSetings!, callback: { (_) in
-                    
-                })
-            }
+
+extension ViewController: ColorPanelDelegate, intensitySliderDelegate {
+    func intesitySliderValueDidChanges(value: CGFloat, inputKey: String) {
+        self.filterInputSetings[inputKey] = value
+        DispatchQueue.main.async {
+            self.ImageView.image = self.imageReview?.addFilter(filterKey: self.selectedFilter, withInputSetings: self.filterInputSetings, callback: { (_) in
+                
+            })
         }
+    }
+    
+    func intesitySliderValueDidChanges(value: CGFloat) {
+        
+    }
+    
+    func didSetColorValue(colorValue: UIColor) {
+        //        let que = DispatchQueue(label: colorValue.description)
+        //        que.async {
+        let filterCiColor = CIColor(color: colorValue)
+        self.filterInputSetings["inputColor"] = filterCiColor
+        DispatchQueue.main.async {
+            self.ImageView.image = self.imageReview?.addFilter(filterKey: self.selectedFilter, withInputSetings: self.filterInputSetings, callback: { (_) in
+                
+            })
+        }
+        //        }
         
         
     }

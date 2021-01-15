@@ -26,41 +26,25 @@ extension UIImage {
         filter.setValue(originalCIImage, forKey: kCIInputImageKey)
         
         callback(filter.inputKeys) // 回调
-        //判断是否具有某些可调整的参数
-        if (filter.inputKeys.contains("inputIntensity")) {
-            filter.setValue(0.5, forKey: kCIInputIntensityKey)
-        }
-        
-        if (filter.inputKeys.contains("inputColor")) {
-            let cicolor = CIColor(red: 0, green: 0, blue: 1)
-            filter.setValue(cicolor, forKey: kCIInputColorKey)
-        }
         
         let context = CIContext.init(mtlDevice: MTLCreateSystemDefaultDevice()!)
         guard let cgImg : CGImage = context.createCGImage(filter.outputImage ?? CIImage(), from: (filter.outputImage ?? CIImage()).extent) else { return self}
         return UIImage(cgImage: cgImg)
-        //        return UIImage(ciImage: filter.outputImage!)
     }
     
-    func addFilter(filterKey:String?, withInputSetings InputValues:Dictionary<String, Any>, callback: (_ intputKets:filterInputKeys)-> Void ) -> UIImage {
+    func addFilter(filterKey:String?, withInputSetings InputValues:Dictionary<String, Any>, callback: ((_ intputKets:filterInputKeys)-> Void)?)  -> UIImage {
         let originalCIImage = CIImage(image: self)
         guard let filter = CIFilter(name: filterKey ?? "" ) else {return self}
         filter.setValue(originalCIImage, forKey: kCIInputImageKey)
         
-        callback(filter.inputKeys) // 回调
+        callback?(filter.inputKeys) // 回调
         
         for inputValue in InputValues {
-            switch inputValue.key {
-            case "inputColor":
-                filter.setValue(inputValue.value, forKey: kCIInputColorKey)
-            default:
-                return self
-            }
+            filter.setValue(inputValue.value, forKey: inputValue.key)
         }
         let context = CIContext.init(mtlDevice: MTLCreateSystemDefaultDevice()!)
         guard let cgImg : CGImage = context.createCGImage(filter.outputImage ?? CIImage(), from: (filter.outputImage ?? CIImage()).extent) else { return self}
         return UIImage(cgImage: cgImg)
-        //        return UIImage(ciImage: filter.outputImage!)
         
     }
     
