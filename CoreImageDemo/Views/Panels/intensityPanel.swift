@@ -10,20 +10,24 @@ import UIKit
 class UIIntensitySlider: UISlider {
     var delegate : intensitySliderDelegate!
     
-    var miniValue: CGFloat = 0.0
-    var maxValue: CGFloat = 0.0
+    var miniValue: Float = 0.0
+    var maxValue: Float = 0.0
     
     var inputKey:String = ""
+    var defaultValue: Float = 0.0
+    
+    lazy var intValue = 0 /// 用于需要进行整数滑动的时候，优化性能，省电
 
-    init(miniValue: CGFloat, maxValue: CGFloat, inputKey: String, frame: CGRect) {
+    init(miniValue: Float, maxValue: Float, defaultValue: Float, inputKey: String, frame: CGRect) {
         super.init(frame: frame)
         self.miniValue = miniValue
         self.maxValue = maxValue
+        self.defaultValue = defaultValue
         self.inputKey = inputKey
         
-        self.minimumValue = 0.0
-        self.maximumValue = 1.0
-        self.setValue(1.0, animated: false)
+        self.minimumValue = miniValue
+        self.maximumValue = maxValue
+        self.setValue(defaultValue, animated: false)
         self.tintColor = .white
         self.addTarget(self, action: #selector(valueChanged(sender:)), for: .valueChanged)
     }
@@ -33,8 +37,15 @@ class UIIntensitySlider: UISlider {
     }
     
     @objc func valueChanged(sender: UISlider) {
-        print("滑动值", sender.value)
-        self.delegate.intesitySliderValueDidChanges(value: CGFloat(sender.value), inputKey: self.inputKey)
+        if self.inputKey == "inputLevels" {
+            if Int(sender.value) != self.intValue { //如果整数值有变化才渲染
+                self.intValue = Int(sender.value)
+                self.delegate.intesitySliderValueDidChanges(value: CGFloat(self.intValue), inputKey: self.inputKey)
+            }
+        }else {
+            self.delegate.intesitySliderValueDidChanges(value: CGFloat(sender.value), inputKey: self.inputKey)
+        }
+        
     }
 }
 

@@ -39,7 +39,6 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
         "CIColorInvert",
         "CIColorMonochrome",
         "CIColorPosterize",
-        "CIFalseColor",
         "CIMaximumComponent",
         "CIMinimumComponent",
         "CIPhotoEffectChrome",
@@ -128,11 +127,10 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
         self.view.addSubview(panelView)
     }
     
-    func addIntensitySlider(miniValue: CGFloat, maxValue: CGFloat, inputKey: String ) {
-        self.intensitySlider = UIIntensitySlider(miniValue: miniValue, maxValue: maxValue, inputKey: inputKey, frame: CGRect(x: 0, y: 0, width: self.view.frame.width - 100, height: 50))
-        self.intensitySlider!.center = CGPoint(x: self.view.center.x, y: self.panelView.frame.maxY+20)
-        self.intensitySlider!.delegate = self
-        self.view.addSubview(self.intensitySlider!)
+    func addIntensitySlider(miniValue: Float, maxValue: Float, defaultValue: Float, inputKey: String, frame:CGRect ) {
+        let intensitySlider = UIIntensitySlider(miniValue: miniValue, maxValue: maxValue, defaultValue: defaultValue, inputKey: inputKey, frame: frame)
+        intensitySlider.delegate = self
+        self.view.addSubview(intensitySlider)
     }
     
     /// 添加滤镜效果
@@ -337,15 +335,32 @@ extension ViewController:UIPickerViewDelegate, UIPickerViewDataSource {
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         self.filterInputSetings = [:] // 清空滤镜效果
         self.panelView.removeFromSuperview()
-        self.intensitySlider?.removeFromSuperview()
+        for subView in self.view.subviews {
+            if subView.isKind(of: UIIntensitySlider.self) {
+                subView.removeFromSuperview()
+            }
+        }
         self.selectedFilter = self.FilterKeys[row]
         
         switch row {
         case 2:
             self.addControlPanel()
-            self.addIntensitySlider(miniValue: 0.0, maxValue: 1.0, inputKey: "inputColor")
+            self.addIntensitySlider(miniValue: 0.0, maxValue: 1.0, defaultValue: 1.0, inputKey: "inputIntensity", frame: CGRect(x: 50, y: self.panelView.frame.maxY + 50, width: self.view.frame.width - 100, height: 50))
+            break
         case 3:
-            self.addIntensitySlider(miniValue: 0.0, maxValue: 10, inputKey: "inputLevels")
+            self.addIntensitySlider(miniValue: 0.0, maxValue: 20.0, defaultValue: 6.0, inputKey: "inputLevels", frame: CGRect(x: 50, y: self.ThumbnailPicker.frame.maxY + 50, width: self.view.frame.width - 50, height: 50))
+            break
+        case 14:
+            self.addIntensitySlider(miniValue: 0.0, maxValue: 1.0, defaultValue: 1.0, inputKey: "inputIntensity", frame: CGRect(x: 50, y: self.ThumbnailPicker.frame.maxY + 50, width: self.view.frame.width - 50, height: 50))
+            break
+        case 15:
+            self.addIntensitySlider(miniValue: 0.0, maxValue: 1.0, defaultValue: 1.0, inputKey: "inputRadius", frame: CGRect(x: 50, y: self.ThumbnailPicker.frame.maxY + 100, width: self.view.frame.width - 50, height: 50))
+            self.addIntensitySlider(miniValue: 0.0, maxValue: 1.0, defaultValue: 1.0, inputKey: "inputIntensity", frame: CGRect(x: 50, y: self.ThumbnailPicker.frame.maxY + 50, width: self.view.frame.width - 50, height: 50))
+            break
+        case 16:
+            self.addIntensitySlider(miniValue: 0.0, maxValue: 1.0, defaultValue: 1.0, inputKey: "inputRadius", frame: CGRect(x: 50, y: self.ThumbnailPicker.frame.maxY + 100, width: self.view.frame.width - 50, height: 50))
+            self.addIntensitySlider(miniValue: 0.0, maxValue: 1.0, defaultValue: 1.0, inputKey: "inputIntensity", frame: CGRect(x: 50, y: self.ThumbnailPicker.frame.maxY + 50, width: self.view.frame.width - 50, height: 50))
+            break
         default:
             break
         }
@@ -358,30 +373,28 @@ extension ViewController:UIPickerViewDelegate, UIPickerViewDataSource {
 
 extension ViewController: ColorPanelDelegate, intensitySliderDelegate {
     func intesitySliderValueDidChanges(value: CGFloat, inputKey: String) {
-        self.filterInputSetings[inputKey] = value
-        DispatchQueue.main.async {
-            self.ImageView.image = self.imageReview?.addFilter(filterKey: self.selectedFilter, withInputSetings: self.filterInputSetings, callback: { (_) in
-                
-            })
+        if self.ImageView.image != nil {
+            self.filterInputSetings[inputKey] = value
+                    print("强度：", self.filterInputSetings)
+                    DispatchQueue.main.async {
+                        self.ImageView.image = self.imageReview?.addFilter(filterKey: self.selectedFilter, withInputSetings: self.filterInputSetings, callback: { (_) in
+                            
+                        })
+                    }
         }
     }
     
-    func intesitySliderValueDidChanges(value: CGFloat) {
-        
-    }
     
     func didSetColorValue(colorValue: UIColor) {
-        //        let que = DispatchQueue(label: colorValue.description)
-        //        que.async {
-        let filterCiColor = CIColor(color: colorValue)
-        self.filterInputSetings["inputColor"] = filterCiColor
-        DispatchQueue.main.async {
-            self.ImageView.image = self.imageReview?.addFilter(filterKey: self.selectedFilter, withInputSetings: self.filterInputSetings, callback: { (_) in
-                
-            })
+        if self.ImageView.image != nil {
+            let filterCiColor = CIColor(color: colorValue)
+                    self.filterInputSetings["inputColor"] = filterCiColor
+                    DispatchQueue.main.async {
+                        self.ImageView.image = self.imageReview?.addFilter(filterKey: self.selectedFilter, withInputSetings: self.filterInputSetings, callback: { (_) in
+                            
+                        })
+                    }
         }
-        //        }
-        
         
     }
 }
