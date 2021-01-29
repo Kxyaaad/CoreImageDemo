@@ -32,6 +32,9 @@ class ViewController: UIViewController, UINavigationControllerDelegate {
     lazy var panelView  = colorPanel() //调色板
     var intensitySlider : UIIntensitySlider?//强度调控
     
+    lazy var touchX:CGFloat = 0.0
+    lazy var touchY:CGFloat = 0.0
+    
     var filterInputSetings : Dictionary<String, Any> = [:]//调节滤镜需要传入的参数
     
     let FilterKeys = [
@@ -372,15 +375,57 @@ extension ViewController:UIPickerViewDelegate, UIPickerViewDataSource {
 
 
 extension ViewController: ColorPanelDelegate, intensitySliderDelegate {
+    
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if self.selectedFilter == "CIVignetteEffect" {
+            self.touchX = event?.allTouches?.first?.location(in: self.ImageView).x ?? 0.0
+            self.touchY = event?.allTouches?.first?.location(in: self.ImageView).y ?? 0.0
+            self.filterInputSetings["inputCenter"] = CIVector(x: self.touchX / self.ImageView.frame.size.width * self.ImageView.image!.size.width, y: (self.ImageView.image!.size.height - self.touchY - self.ImageView.frame.height) / self.ImageView.frame.size.height * self.ImageView.image!.size.height )
+            DispatchQueue.main.async {
+                self.ImageView.image = self.imageReview?.addFilter(filterKey: self.selectedFilter, withInputSetings: self.filterInputSetings, callback: { (_) in
+                    
+                })
+            }
+        }
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if self.selectedFilter == "CIVignetteEffect" {
+            self.touchX = event?.allTouches?.first?.location(in: self.ImageView).x ?? 0.0
+            self.touchY = event?.allTouches?.first?.location(in: self.ImageView).y ?? 0.0
+            self.filterInputSetings["inputCenter"] = CIVector(x: self.touchX / self.ImageView.frame.size.width * self.ImageView.image!.size.width, y: (self.ImageView.image!.size.height - self.touchY - self.ImageView.frame.height) / self.ImageView.frame.size.height * self.ImageView.image!.size.height )
+            DispatchQueue.main.async {
+                self.ImageView.image = self.imageReview?.addFilter(filterKey: self.selectedFilter, withInputSetings: self.filterInputSetings, callback: { (_) in
+                    
+                })
+            }
+        }
+    }
+    
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if self.selectedFilter == "CIVignetteEffect" {
+            self.touchX = event?.allTouches?.first?.location(in: self.ImageView).x ?? 0.0
+            self.touchY = event?.allTouches?.first?.location(in: self.ImageView).y ?? 0.0
+            self.filterInputSetings["inputCenter"] = CIVector(x: self.touchX / self.ImageView.frame.size.width * self.ImageView.image!.size.width, y: (self.ImageView.image!.size.height - self.touchY - self.ImageView.frame.height) / self.ImageView.frame.size.height * self.ImageView.image!.size.height )
+            DispatchQueue.main.async {
+                self.ImageView.image = self.imageReview?.addFilter(filterKey: self.selectedFilter, withInputSetings: self.filterInputSetings, callback: { (_) in
+                    
+                })
+            }
+        }
+    }
+    
     func intesitySliderValueDidChanges(value: CGFloat, inputKey: String) {
+        if self.selectedFilter == "CIVignetteEffect" {
+            self.filterInputSetings["inputCenter"] = CIVector(x: self.touchX / self.ImageView.frame.size.width * self.ImageView.image!.size.width, y: (self.ImageView.image!.size.height - self.touchY - self.ImageView.frame.height) / self.ImageView.frame.size.height * self.ImageView.image!.size.height )
+        }
         if self.ImageView.image != nil {
             self.filterInputSetings[inputKey] = value
-                    print("强度：", self.filterInputSetings)
-                    DispatchQueue.main.async {
-                        self.ImageView.image = self.imageReview?.addFilter(filterKey: self.selectedFilter, withInputSetings: self.filterInputSetings, callback: { (_) in
-                            
-                        })
-                    }
+            DispatchQueue.main.async {
+                self.ImageView.image = self.imageReview?.addFilter(filterKey: self.selectedFilter, withInputSetings: self.filterInputSetings, callback: { (_) in
+                    
+                })
+            }
         }
     }
     
@@ -388,13 +433,17 @@ extension ViewController: ColorPanelDelegate, intensitySliderDelegate {
     func didSetColorValue(colorValue: UIColor) {
         if self.ImageView.image != nil {
             let filterCiColor = CIColor(color: colorValue)
-                    self.filterInputSetings["inputColor"] = filterCiColor
-                    DispatchQueue.main.async {
-                        self.ImageView.image = self.imageReview?.addFilter(filterKey: self.selectedFilter, withInputSetings: self.filterInputSetings, callback: { (_) in
-                            
-                        })
-                    }
+            self.filterInputSetings["inputColor"] = filterCiColor
+            DispatchQueue.main.async {
+                self.ImageView.image = self.imageReview?.addFilter(filterKey: self.selectedFilter, withInputSetings: self.filterInputSetings, callback: { (_) in
+                    
+                })
+            }
         }
         
     }
+}
+
+extension UIImageView {
+    
 }
